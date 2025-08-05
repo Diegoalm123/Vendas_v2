@@ -38,7 +38,13 @@ def deletar_venda(id):
 def editar_venda(id,produto,categoria, valor, data_venda,cliente):
     conexao=conectar()
     cursor=conexao.cursor()
-    comando=
+    comando='''UPDATE vendas SET produto = %s,
+    categoria= %s,
+    valor= %s,
+    data_venda= %s,
+    cliente= %s
+    WHERE id= %s
+      '''
 
     valores=(produto,categoria,valor,data_venda,cliente,id)
     cursor.execute(comando,valores)
