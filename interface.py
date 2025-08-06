@@ -10,15 +10,59 @@ def atualizar_lista():
         tree.insert("", tk.END, values=row)
 
 def adicionar_venda():
-    inserir_venda(
-        produto=produto_entry.get(),
-        categoria=categoria_entry.get(),
-        valor=float(valor_entry.get()),
-        data_venda=data_entry.get(),
-        cliente=cliente_entry.get()
-    )
-    atualizar_lista()
-    
+    try:
+        inserir_venda(
+            produto=produto_entry.get(),
+            categoria=categoria_entry.get(),
+            valor=float(valor_entry.get()),
+            data_venda=data_entry.get(),
+            cliente=cliente_entry.get()
+        )
+        atualizar_lista()
+        messagebox.showinfo("Sucesso", "Venda adicionada com sucesso!")
+    except Exception as e:
+        messagebox.showerror("Erro", f"Erro ao adicionar: {e}")
+
+def editar_venda_interface():
+    item_selecionado = tree.selection()
+    if not item_selecionado:
+        messagebox.showwarning("Aviso", "Selecione uma venda para editar.")
+        return
+
+    valores = tree.item(item_selecionado)["values"]
+    id_venda = valores[0]
+
+    try:
+        editar_venda(
+            id_venda,
+            produto_entry.get(),
+            categoria_entry.get(),
+            float(valor_entry.get()),
+            data_entry.get(),
+            cliente_entry.get()
+        )
+        atualizar_lista()
+        messagebox.showinfo("Sucesso", "Venda editada com sucesso!")
+    except Exception as e:
+        messagebox.showerror("Erro", f"Erro ao editar: {e}")
+
+def deletar_venda_interface():
+    item_selecionado = tree.selection()
+    if not item_selecionado:
+        messagebox.showwarning("Aviso", "Selecione uma venda para deletar.")
+        return
+
+    valores = tree.item(item_selecionado)["values"]
+    id_venda = valores[0]
+
+    confirmacao = messagebox.askyesno("Confirmar", "Tem certeza que deseja excluir esta venda?")
+    if confirmacao:
+        try:
+            deletar_venda(id_venda)
+            atualizar_lista()
+            messagebox.showinfo("Sucesso", "Venda deletada com sucesso!")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao deletar: {e}")
 
 # interface
 
@@ -47,11 +91,13 @@ tk.Label(janela, text="Cliente").grid(row=4, column=0)
 cliente_entry = tk.Entry(janela)
 cliente_entry.grid(row=4, column=1)
 
-# Adicionar
+# Botao
 
-tk.Button(janela, text="Adicionar Venda", command=adicionar_venda).grid(row=5, columnspan=2, pady=10)
+tk.Button(janela, text="Adicionar Venda", command=adicionar_venda).grid(row=5, columnspan=2, pady=5)
+tk.Button(janela, text="Editar Venda", command=editar_venda_interface).grid(row=6, columnspan=2, pady=5)
+tk.Button(janela, text="Deletar Venda", command=deletar_venda_interface).grid(row=7, columnspan=2, pady=5)
 
-# tabela
+# Tabela
 
 colunas = ("ID", "Produto", "Categoria", "Valor", "Data", "Cliente")
 tree = ttk.Treeview(janela, columns=colunas, show="headings")
@@ -60,9 +106,9 @@ for col in colunas:
     tree.heading(col, text=col)
     tree.column(col, minwidth=0, width=100)
 
-tree.grid(row=6, column=0, columnspan=2)
+tree.grid(row=8, column=0, columnspan=2, pady=10)
 
-# atualizar a tabela
+# Atualizar lista ao iniciar
 
 atualizar_lista()
 
